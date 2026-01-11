@@ -7,22 +7,22 @@ namespace Cozy.Hexagons.Components
         [SerializeField]
         private HexagonConfiguration configuration;
 
-        private HexagonGrid grid;
+        public HexagonGrid Grid { get; private set; }
 
         private void Awake()
         {
-            grid = new HexagonGrid();
-            grid.BuildFromConfiguration(configuration);
+            Grid = new HexagonGrid();
+            Grid.BuildFromConfiguration(configuration);
         }
 
         private void OnDrawGizmosSelected()
         {
-            grid ??= new HexagonGrid();
-            grid.BuildFromConfiguration(configuration);
+            Grid ??= new HexagonGrid();
+            Grid.BuildFromConfiguration(configuration);
 
             Gizmos.color = Color.yellow;
             
-            grid.ForEach((hex) =>
+            Grid.ForEach((hex) =>
             {
                 var (xHex, yHex) = HexagonMath.FromHex[configuration.Orientation](hex, configuration.HexRadius);
                 DrawHexOutline(xHex, yHex);
