@@ -1,0 +1,3 @@
+Add editor assets and scripts here.
+Add an assembly definition if scripts are added.
+Remember to flag editor assemblies to only be included in editor builds.

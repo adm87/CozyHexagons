@@ -1,0 +1,14 @@
+{
+    "name": "<your package name here>",
+    "displayName": "<your display name here>",
+    "author": "<your name here>",
+    "version": "<your version here>",
+    "unity": "<your unity version here>",
+    "hideInEditor": false,
+    "description": "<your description here>",
+    "repository": {
+      "url": "<your repository here>",
+      "type": "git"
+    },
+    "license": "<your license here>"
+}

@@ -1,0 +1,2 @@
+Add package assets and scripts here.
+Add an assembly definition if scripts are included.
