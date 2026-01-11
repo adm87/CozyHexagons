@@ -9,18 +9,20 @@ namespace Cozy.Hexagons.Components
 
         public HexagonGrid Grid { get; private set; }
 
+        public HexagonConfiguration Config => configuration;
+
         private void Awake()
         {
             Grid = new HexagonGrid();
             Grid.BuildFromConfiguration(configuration);
         }
 
-        private void OnDrawGizmosSelected()
+        private void OnDrawGizmos()
         {
             Grid ??= new HexagonGrid();
             Grid.BuildFromConfiguration(configuration);
 
-            Gizmos.color = Color.yellow;
+            Gizmos.color = Color.blue;
             
             Grid.ForEach((hex) =>
             {

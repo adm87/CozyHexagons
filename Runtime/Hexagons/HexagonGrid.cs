@@ -1,8 +1,9 @@
+using UnityEngine;
+
 namespace Cozy.Hexagons
 {
     using Hexagons = System.Collections.Generic.Dictionary<long, Hexagon>;
     using HexagonItrFunc = System.Func<Hexagon, bool>;
-    using UnityEngine;
 
     /// <summary>
     /// HexagonGrid represents a collection of hexagons arranged in a grid.

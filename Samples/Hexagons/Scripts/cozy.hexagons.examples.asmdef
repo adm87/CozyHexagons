@@ -1,7 +1,9 @@
 {
     "name": "Cozy.Hexagons.Examples",
     "rootNamespace": "Cozy.Hexagons.Examples",
-    "references": [],
+    "references": [
+        "GUID:7b1d5dca2529ea1eb847069eb639d4f6"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
