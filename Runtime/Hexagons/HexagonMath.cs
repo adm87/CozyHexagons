@@ -8,16 +8,28 @@ namespace Cozy.Hexagons
     using ToHexagonProjectionFunc = Func<float, float, float, Hexagon>;
     using HexagonSpacingFunc = Func<float, (float xSpacing, float ySpacing)>;
 
+    /// <summary>
+    /// HexagonMath provides mathematical functions and constants for working with hexagonal grids.
+    /// </summary>
     public static class HexagonMath
     {
+        /// <summary>
+        /// Sqrt3 is the square root of 3, approximately 1.732.
+        /// </summary>
         public const float Sqrt3 = 1.73205080757f;
 
+        /// <summary>
+        /// AxialNeighbors defines the six neighboring hexagons in axial coordinates.
+        /// </summary>
         public static readonly (int x, int y)[] AxialNeighbors = new (int x, int y)[6]
         {
             (1, 0), (0, 1), (-1, 1),
             (-1, 0), (0, -1), (1, -1)
         };
 
+        /// <summary>
+        /// OffsetNeighbors defines the six neighboring hexagons in offset coordinates, based on orientation and parity.
+        /// </summary>
         public static readonly Dictionary<HexagonOrientation, Dictionary<HexagonOffsetParity, (int q, int r)[]>> OffsetNeighbors = new()
         {
             {
@@ -66,12 +78,18 @@ namespace Cozy.Hexagons
             }
         };
 
+        /// <summary>
+        /// Angles defines the angles (in degrees) for each corner of a hexagon based on its orientation.
+        /// </summary>
         public static readonly Dictionary<HexagonOrientation, float[]> Angles = new()
         {
             { HexagonOrientation.PointyTop, new float[6] {30f, 90f, 150f, 210f, 270f, 330f} },
             { HexagonOrientation.FlatTop, new float[6] {0f, 60f, 120f, 180f, 240f, 300f} },
         };
 
+        /// <summary>
+        /// Spacing provides functions to calculate the spacing between hexagons based on their orientation and radius.
+        /// </summary>
         public static readonly Dictionary<HexagonOrientation, HexagonSpacingFunc> Spacing = new()
         {
             {
@@ -84,6 +102,9 @@ namespace Cozy.Hexagons
             }
         };
 
+        /// <summary>
+        /// FromHex provides functions to convert axial hexagon coordinates to Cartesian coordinates based on orientation.
+        /// </summary>
         public static readonly Dictionary<HexagonOrientation, FromHexagonProjectionFunc> FromHex = new()
         {
             {
@@ -106,6 +127,9 @@ namespace Cozy.Hexagons
             }
         };
 
+        /// <summary>
+        /// ToHex provides functions to convert Cartesian coordinates to axial hexagon coordinates based on orientation.
+        /// </summary>
         public static readonly Dictionary<HexagonOrientation, ToHexagonProjectionFunc> ToHex = new()
         {
             {
@@ -128,6 +152,14 @@ namespace Cozy.Hexagons
             }
         };
 
+
+        /// <summary>
+        /// RoundHex rounds fractional axial coordinates to the nearest hexagon.
+        /// </summary>
+        /// <param name="q"></param>
+        /// <param name="r"></param>
+        /// <param name="s"></param>
+        /// <returns></returns>
         public static Hexagon RoundHex(float q, float r, float s)
         {
             int rq = (int)MathF.Round(q);
@@ -150,6 +182,13 @@ namespace Cozy.Hexagons
             return new Hexagon(rq, rr);
         }
 
+        /// <summary>
+        /// GetCorner calculates the Cartesian coordinates of a specific corner of a hexagon.
+        /// </summary>
+        /// <param name="radius"></param>
+        /// <param name="corner"></param>
+        /// <param name="orientation"></param>
+        /// <returns></returns>
         public static (float x, float y) GetCorner(float radius, int corner, HexagonOrientation orientation)
         {
             if (corner < 0) corner = 0;
