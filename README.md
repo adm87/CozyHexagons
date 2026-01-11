@@ -1,2 +1,2 @@
-# UnityPackageTemplate
-A template to use for setting up Unity packages.
+# Cozy Hexagon
+Just a simple Unity package for hex grids.
