@@ -1,3 +1,0 @@
-Add package tests here.
-Add an assembly definition if scripts are added.
-Recommended to separate Runtime and Editor tests.

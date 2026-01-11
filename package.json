@@ -1,14 +1,14 @@
 {
-    "name": "<your package name here>",
-    "displayName": "<your display name here>",
-    "author": "<your name here>",
-    "version": "<your version here>",
-    "unity": "<your unity version here>",
+    "name": "com.adm87.cozy.hexagons",
+    "displayName": "Cozy Hexagons",
+    "author": "adm87",
+    "version": "1.0.0",
+    "unity": "6000.0",
     "hideInEditor": false,
-    "description": "<your description here>",
+    "description": "My hexagon package for Unity development",
     "repository": {
-      "url": "<your repository here>",
+      "url": "https://github.com/adm87/CozyHexagons.git",
       "type": "git"
     },
-    "license": "<your license here>"
+    "license": "MIT"
 }
