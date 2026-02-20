@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace Cozy.Hexagons
 {    
     using FromHexagonProjectionFunc = Func<Hexagon, float, (float x, float y)>;
-    using ToHexagonProjectionFunc = Func<float, float, float, Hexagon>;
+    using ToHexagonProjectionFunc = Func<float, float, float, (float q, float r, float s)>;
     using HexagonSpacingFunc = Func<float, (float xSpacing, float ySpacing)>;
 
     /// <summary>
@@ -13,18 +12,51 @@ namespace Cozy.Hexagons
     /// </summary>
     public static class HexagonMath
     {
+        public const float Deg2Rad = (float)(Math.PI / 180.0);
+        public const float Rad2Deg = (float)(180.0 / Math.PI);
+
         /// <summary>
         /// Sqrt3 is the square root of 3, approximately 1.732.
         /// </summary>
         public const float Sqrt3 = 1.73205080757f;
 
         /// <summary>
+        /// HalfSqrt3 is half of the square root of 3, approximately 0.866.
+        /// </summary>
+        public readonly static float HalfSqrt3 = 0.5f * Sqrt3;
+
+        /// <summary>
         /// AxialNeighbors defines the six neighboring hexagons in axial coordinates.
         /// </summary>
         public static readonly (int x, int y)[] AxialNeighbors = new (int x, int y)[6]
         {
-            (1, 0), (0, 1), (-1, 1),
-            (-1, 0), (0, -1), (1, -1)
+            ( 1, 0), (0,  1), (-1,  1),
+            (-1, 0), (0, -1), ( 1, -1)
+        };
+
+        /// <summary>
+        /// Normals defines the unit normal vectors for each corner of a hexagon based on its orientation.
+        /// </summary>
+        public readonly static Dictionary<HexagonOrientation, (float x, float y)[]> Normals = new()
+        {
+            [HexagonOrientation.PointyTop] = new (float x, float y)[]
+            {
+                ( 1f,        0f),
+                ( 0.5f,      HalfSqrt3),
+                (-0.5f,      HalfSqrt3),
+                (-1f, 0f),
+                (-0.5f,     -HalfSqrt3),
+                ( 0.5f,     -HalfSqrt3)
+            },
+            [HexagonOrientation.FlatTop] = new (float x, float y)[]
+            {
+                (1,         0),
+                (0.5f,      HalfSqrt3),
+                (-0.5f,     HalfSqrt3),
+                (-1, 0),
+                (-0.5f,    -HalfSqrt3),
+                (0.5f,     -HalfSqrt3)
+            }
         };
 
         /// <summary>
@@ -138,7 +170,7 @@ namespace Cozy.Hexagons
                 {
                     float q = (Sqrt3 / 3f * x - 1f / 3f * y) / radius;
                     float r = 2f / 3f * y / radius;
-                    return RoundHex(q, r, -q - r);
+                    return (q, r, -q - r);
                 }
             },
             {
@@ -147,11 +179,10 @@ namespace Cozy.Hexagons
                 {
                     float q = 2f / 3f * x / radius;
                     float r = (Sqrt3 / 3f * y - 1f / 3f * x) / radius;
-                    return RoundHex(q, r, -q - r);
+                    return (q, r, -q - r);
                 }
             }
         };
-
 
         /// <summary>
         /// RoundHex rounds fractional axial coordinates to the nearest hexagon.
@@ -178,6 +209,10 @@ namespace Cozy.Hexagons
             {
                 rr = -rq - rs;
             }
+            else
+            {
+                rs = -rq - rr;
+            }
 
             return new Hexagon(rq, rr);
         }
@@ -195,9 +230,9 @@ namespace Cozy.Hexagons
             if (corner > 5) corner = 5;
 
             float angleDeg = Angles[orientation][corner];
-            float angleRad = Mathf.Deg2Rad * angleDeg;
-            float x = radius * Mathf.Cos(angleRad);
-            float y = radius * Mathf.Sin(angleRad);
+            float angleRad = angleDeg * Deg2Rad;
+            float x = radius * (float)Math.Cos(angleRad);
+            float y = radius * (float)Math.Sin(angleRad);
 
             return (x, y);
         }

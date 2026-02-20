@@ -32,11 +32,13 @@ namespace Cozy.Hexagons.Examples
                 return;
             }
             
-            Hexagon inputHex = HexagonMath.ToHex[GridComponent.Config.Orientation](
+             var (q, r, s) = HexagonMath.ToHex[GridComponent.Config.Orientation](
                 hitPoint.Value.x - transform.position.x,
                 hitPoint.Value.z - transform.position.z,
                 GridComponent.Config.HexRadius
             );
+
+            Hexagon inputHex = HexagonMath.RoundHex(q, r, s);
 
             if (GridComponent.Grid.TryGetHexagon(inputHex, out Hexagon hoverHex))
             {
