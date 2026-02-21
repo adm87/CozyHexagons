@@ -40,7 +40,7 @@ namespace Cozy.Hexagons.Examples
     
             if (GridComponent.Grid.TryGetHexagon(inputHex, out Hexagon hoverHex))
             {
-                var (xHex, yHex) = HexagonMath.FromHex(hoverHex, GridComponent.Config.HexRadius, GridComponent.Config.Orientation);
+                var (xHex, yHex) = HexagonMath.FromHex(hoverHex.Q, hoverHex.R, GridComponent.Config.HexRadius, GridComponent.Config.Orientation);
                 
                 Gizmos.color = Color.red;
                 Gizmos.DrawSphere(new Vector3(transform.position.x + xHex, transform.position.y, transform.position.z + yHex),0.2f);
@@ -65,7 +65,7 @@ namespace Cozy.Hexagons.Examples
 
                     if (GridComponent.Grid.TryGetHexagon(neighborHex, out Hexagon validNeighborHex))
                     {
-                        var (nxHex, nyHex) = HexagonMath.FromHex(validNeighborHex, GridComponent.Config.HexRadius, GridComponent.Config.Orientation);
+                        var (nxHex, nyHex) = HexagonMath.FromHex(validNeighborHex.Q, validNeighborHex.R, GridComponent.Config.HexRadius, GridComponent.Config.Orientation);
                         
                         Gizmos.color = Color.green;
                         Gizmos.DrawSphere(new Vector3(transform.position.x + nxHex, transform.position.y, transform.position.z + nyHex),0.1f);
