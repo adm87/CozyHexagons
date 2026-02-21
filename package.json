@@ -2,7 +2,7 @@
     "name": "com.adm87.cozy.hexagons",
     "displayName": "Cozy Hexagons",
     "author": "adm87",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "unity": "6000.0",
     "hideInEditor": false,
     "description": "My hexagon package for Unity development",

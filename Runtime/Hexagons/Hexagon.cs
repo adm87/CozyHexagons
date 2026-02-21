@@ -44,5 +44,10 @@ namespace Cozy.Hexagons
             Q = q;
             R = r;
         }
+
+        public readonly (int q, int r, int s) ToQRS()
+        {
+            return (Q, R, S);
+        }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using PlasticPipe.PlasticProtocol.Messages;
 
 namespace Cozy.Hexagons
 {    
@@ -120,69 +121,94 @@ namespace Cozy.Hexagons
         };
 
         /// <summary>
-        /// Spacing provides functions to calculate the spacing between hexagons based on their orientation and radius.
+        /// ToHex converts Cartesian coordinates to axial coordinates of a hexagon based on its radius and orientation.
+        /// Note: The returned axial coordinates are fractional and may need to be rounded to the nearest hexagon using RoundHex or SnapToHex.
         /// </summary>
-        public static readonly Dictionary<HexagonOrientation, HexagonSpacingFunc> Spacing = new()
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="radius"></param>
+        /// <param name="orientation"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
+        public static (float q, float r, float s) ToHex(float x, float y, float radius, HexagonOrientation orientation)
         {
+            switch (orientation)
             {
-                HexagonOrientation.PointyTop,
-                (radius) => (Sqrt3 * radius, 1.5f * radius)
-            },
-            {
-                HexagonOrientation.FlatTop,
-                (radius) => (1.5f * radius, Sqrt3 * radius)
-            }
-        };
-
-        /// <summary>
-        /// FromHex provides functions to convert axial hexagon coordinates to Cartesian coordinates based on orientation.
-        /// </summary>
-        public static readonly Dictionary<HexagonOrientation, FromHexagonProjectionFunc> FromHex = new()
-        {
-            {
-                HexagonOrientation.PointyTop,
-                (hexagon, radius) =>
-                {
-                    float x = radius * Sqrt3 * (hexagon.Q + hexagon.R / 2f);
-                    float y = radius * 1.5f * hexagon.R;
-                    return (x, y);
-                }
-            },
-            {
-                HexagonOrientation.FlatTop,
-                (hexagon, radius) =>
-                {
-                    float x = radius * 1.5f * hexagon.Q;
-                    float y = radius * Sqrt3 * (hexagon.R + hexagon.Q / 2f);
-                    return (x, y);
-                }
-            }
-        };
-
-        /// <summary>
-        /// ToHex provides functions to convert Cartesian coordinates to axial hexagon coordinates based on orientation.
-        /// </summary>
-        public static readonly Dictionary<HexagonOrientation, ToHexagonProjectionFunc> ToHex = new()
-        {
-            {
-                HexagonOrientation.PointyTop,
-                (x, y, radius) =>
-                {
+                case HexagonOrientation.PointyTop:
                     float q = (Sqrt3 / 3f * x - 1f / 3f * y) / radius;
                     float r = 2f / 3f * y / radius;
                     return (q, r, -q - r);
-                }
-            },
-            {
-                HexagonOrientation.FlatTop,
-                (x, y, radius) =>
-                {
-                    float q = 2f / 3f * x / radius;
-                    float r = (Sqrt3 / 3f * y - 1f / 3f * x) / radius;
-                    return (q, r, -q - r);
-                }
+                case HexagonOrientation.FlatTop:
+                    float q2 = 2f / 3f * x / radius;
+                    float r2 = (Sqrt3 / 3f * y - 1f / 3f * x) / radius;
+                    return (q2, r2, -q2 - r2);
             }
-        };
+            throw new InvalidOperationException("Invalid hexagon orientation");
+        }
+
+        /// <summary>
+        /// FromHex converts axial coordinates of a hexagon to Cartesian coordinates based on its radius and orientation.
+        /// </summary>
+        /// <param name="hexagon"></param>
+        /// <param name="radius"></param>
+        /// <param name="orientation"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
+        public static (float x, float y) FromHex(Hexagon hexagon, float radius, HexagonOrientation orientation)
+        {
+            switch (orientation)
+            {
+                case HexagonOrientation.PointyTop:
+                    float x = radius * Sqrt3 * (hexagon.Q + hexagon.R / 2f);
+                    float y = radius * 1.5f * hexagon.R;
+                    return (x, y);
+                case HexagonOrientation.FlatTop:
+                    float x2 = radius * 1.5f * hexagon.Q;
+                    float y2 = radius * Sqrt3 * (hexagon.R + hexagon.Q / 2f);
+                    return (x2, y2);
+            }
+            throw new InvalidOperationException("Invalid hexagon orientation");
+        }
+
+        /// <summary>
+        /// GetSpacing calculates the horizontal and vertical spacing between hexagons based on their radius and orientation.
+        /// </summary>
+        /// <param name="radius"></param>
+        /// <param name="orientation"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
+        public static (float xSpacing, float ySpacing) GetSpacing(float radius, HexagonOrientation orientation)
+        {
+            switch (orientation)
+            {
+                case HexagonOrientation.PointyTop:
+                    return (Sqrt3 * radius, 1.5f * radius);
+                case HexagonOrientation.FlatTop:
+                    return (1.5f * radius, Sqrt3 * radius);
+            }
+            throw new InvalidOperationException("Invalid hexagon orientation");
+        }
+
+        /// <summary>
+        /// SnapToQRS converts Cartesian coordinates to axial coordinates and rounds them to the nearest hexagon,
+        /// effectively snapping a point to the nearest hexagon center.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="radius"></param>
+        /// <param name="orientation"></param>
+        /// <returns></returns>
+        public static (int q, int r, int s) SnapToQRS(float x, float y, float radius, HexagonOrientation orientation)
+        {
+            var (q, r, s) = ToHex(x, y, radius, orientation);
+            return RoundHex(q, r, s).ToQRS();
+        }
+
+        public static Hexagon SnapToHex(float x, float y, float radius, HexagonOrientation orientation)
+        {
+            var (q, r, s) = ToHex(x, y, radius, orientation);
+            return RoundHex(q, r, s);
+        }
 
         /// <summary>
         /// RoundHex rounds fractional axial coordinates to the nearest hexagon.
