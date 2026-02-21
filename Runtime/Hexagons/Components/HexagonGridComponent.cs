@@ -19,11 +19,10 @@ namespace Cozy.Hexagons.Components
 
         private void OnDrawGizmos()
         {
+            Gizmos.color = Color.white;
+
             Grid ??= new HexagonGrid();
             Grid.BuildFromConfiguration(configuration);
-
-            Gizmos.color = Color.blue;
-            
             Grid.ForEach((hex) =>
             {
                 var (xHex, yHex) = HexagonMath.FromHex(hex.Q, hex.R, configuration.HexRadius, configuration.Orientation);
@@ -34,11 +33,15 @@ namespace Cozy.Hexagons.Components
         
         private void DrawHexOutline(float xHex, float yHex)
         {
-            Vector3 position = transform.position;
-            for (int corner = 0; corner < 6; corner++)
+            var position = transform.position;
+
+            var apothem = configuration.HexRadius * HexagonMath.HalfSqrt3;
+            var edgeNormals = HexagonMath.EdgeNormals[configuration.Orientation];
+
+            for (int i = 0; i < 6; i++)
             {
-                var (x1, y1) = HexagonMath.GetCorner(configuration.HexRadius, corner, configuration.Orientation);
-                var (x2, y2) = HexagonMath.GetCorner(configuration.HexRadius, (corner + 1) % 6, configuration.Orientation);
+                var (x1, y1) = HexagonMath.GetCorner(configuration.HexRadius, i, configuration.Orientation);
+                var (x2, y2) = HexagonMath.GetCorner(configuration.HexRadius, (i + 1) % 6, configuration.Orientation);
 
                 Gizmos.DrawLine(
                     new Vector3(position.x + xHex + x1, position.y, position.z + yHex + y1),

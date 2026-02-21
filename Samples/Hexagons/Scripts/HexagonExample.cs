@@ -49,18 +49,13 @@ namespace Cozy.Hexagons.Examples
                 {
                     int dq, dr;
 
-                    switch (GridComponent.Config.CoordinateSystem)
+                    (dq, dr) = GridComponent.Config.CoordinateSystem switch
                     {
-                        case HexagonCoordinateSystem.Axial:
-                            (dq, dr) = HexagonMath.AxialNeighbors[neighbor];
-                            break;
-                        case HexagonCoordinateSystem.Offset:
-                            (dq, dr) = HexagonMath.OffsetNeighbors[GridComponent.Config.Orientation][GridComponent.Config.OffsetGrid.OffsetParity][neighbor];
-                            break;
-                        default:
-                            throw new System.ArgumentOutOfRangeException($"Unsupported HexagonCoordinateSystem: {GridComponent.Config.CoordinateSystem}");
-                    }
-
+                        HexagonCoordinateSystem.Axial => HexagonMath.AxialNeighbors[neighbor],
+                        HexagonCoordinateSystem.Offset => HexagonMath.OffsetNeighbors[GridComponent.Config.Orientation][GridComponent.Config.OffsetGrid.OffsetParity][neighbor],
+                        _ => throw new System.ArgumentOutOfRangeException($"Unsupported HexagonCoordinateSystem: {GridComponent.Config.CoordinateSystem}"),
+                    };
+                    
                     Hexagon neighborHex = new(hoverHex.Q + dq, hoverHex.R + dr);
 
                     if (GridComponent.Grid.TryGetHexagon(neighborHex, out Hexagon validNeighborHex))

@@ -1,13 +1,8 @@
 using System;
 using System.Collections.Generic;
-using PlasticPipe.PlasticProtocol.Messages;
 
 namespace Cozy.Hexagons
 {    
-    using FromHexagonProjectionFunc = Func<Hexagon, float, (float x, float y)>;
-    using ToHexagonProjectionFunc = Func<float, float, float, (float q, float r, float s)>;
-    using HexagonSpacingFunc = Func<float, (float xSpacing, float ySpacing)>;
-
     /// <summary>
     /// HexagonMath provides mathematical functions and constants for working with hexagonal grids.
     /// </summary>
@@ -27,40 +22,6 @@ namespace Cozy.Hexagons
         public readonly static float HalfSqrt3 = 0.5f * Sqrt3;
 
         /// <summary>
-        /// AxialNeighbors defines the six neighboring hexagons in axial coordinates.
-        /// </summary>
-        public static readonly (int x, int y)[] AxialNeighbors = new (int x, int y)[6]
-        {
-            ( 1, 0), (0,  1), (-1,  1),
-            (-1, 0), (0, -1), ( 1, -1)
-        };
-
-        /// <summary>
-        /// Normals defines the unit normal vectors for each corner of a hexagon based on its orientation.
-        /// </summary>
-        public readonly static Dictionary<HexagonOrientation, (float x, float y)[]> Normals = new()
-        {
-            [HexagonOrientation.PointyTop] = new (float x, float y)[]
-            {
-                ( 1f,        0f),
-                ( 0.5f,      HalfSqrt3),
-                (-0.5f,      HalfSqrt3),
-                (-1f, 0f),
-                (-0.5f,     -HalfSqrt3),
-                ( 0.5f,     -HalfSqrt3)
-            },
-            [HexagonOrientation.FlatTop] = new (float x, float y)[]
-            {
-                (1,         0),
-                (0.5f,      HalfSqrt3),
-                (-0.5f,     HalfSqrt3),
-                (-1, 0),
-                (-0.5f,    -HalfSqrt3),
-                (0.5f,     -HalfSqrt3)
-            }
-        };
-
-        /// <summary>
         /// OffsetNeighbors defines the six neighboring hexagons in offset coordinates, based on orientation and parity.
         /// </summary>
         public static readonly Dictionary<HexagonOrientation, Dictionary<HexagonOffsetParity, (int q, int r)[]>> OffsetNeighbors = new()
@@ -73,16 +34,16 @@ namespace Cozy.Hexagons
                         HexagonOffsetParity.Even,
                         new (int q, int r)[6]
                         {
-                            (1, 0), (0, -1), (-1, -1),
-                            (-1, 0), (-1, 1), (0, 1)
+                            ( 1, 0), (0, -1), (-1, -1),
+                            (-1, 0), (-1, 1), ( 0,  1)
                         }
                     },
                     {
                         HexagonOffsetParity.Odd,
                         new (int q, int r)[6]
                         {
-                            (+1, 0), (+1, -1), (0, -1),
-                            (-1, 0), (0, +1), (+1, +1)
+                            ( 1, 0), (1, -1), (0, -1),
+                            (-1, 0), (0,  1), (1,  1)
                         }
                     }
                 }
@@ -95,16 +56,16 @@ namespace Cozy.Hexagons
                         HexagonOffsetParity.Even,
                         new (int q, int r)[6]
                         {
-                            (+1, 0), (+1, -1), (0, -1),
-                            (-1, 0), (0, +1), (+1, +1)
+                            ( 1, 0), (1, -1), (0, -1),
+                            (-1, 0), (0,  1), (1,  1)
                         }
                     },
                     {
                         HexagonOffsetParity.Odd,
                         new (int q, int r)[6]
                         {
-                            (+1, 0), (0, -1), (-1, -1),
-                            (-1, 0), (-1, +1), (0, +1)
+                            ( 1, 0), ( 0, -1), (-1, -1),
+                            (-1, 0), (-1,  1), ( 0,  1)
                         }
                     }
                 }
@@ -112,13 +73,81 @@ namespace Cozy.Hexagons
         };
 
         /// <summary>
-        /// Angles defines the angles (in degrees) for each corner of a hexagon based on its orientation.
+        /// AxialNeighbors defines the six neighboring hexagons in axial coordinates (q, r) for a hexagon at (0, 0).
         /// </summary>
-        public static readonly Dictionary<HexagonOrientation, float[]> Angles = new()
+        public static readonly (int q, int r)[] AxialNeighbors = new (int q, int r)[6]
         {
-            { HexagonOrientation.PointyTop, new float[6] {30f, 90f, 150f, 210f, 270f, 330f} },
-            { HexagonOrientation.FlatTop, new float[6] {0f, 60f, 120f, 180f, 240f, 300f} },
+            (0, 1), (-1, 1), (-1, 0), (0, -1), (1, -1),(1, 0)
         };
+
+        /// <summary>
+        /// CornerAngles aligned so that Index 0 starts the edge leading to AxialNeighbors[0].
+        /// </summary>
+        public static readonly Dictionary<HexagonOrientation, float[]> CornerAngles = new()
+        {
+            [HexagonOrientation.PointyTop] = new float[6] { 30f, 90f, 150f, 210f, 270f, 330f },
+            
+            [HexagonOrientation.FlatTop] = new float[6] { 0f, 60f, 120f, 180f, 240f,300f }
+        };
+
+        /// <summary>
+        /// EdgeNormals aligned so that Index i is the physical direction of AxialNeighbors[i].
+        /// </summary>
+        public readonly static Dictionary<HexagonOrientation, (float x, float y)[]> EdgeNormals = new()
+        {
+            // Pointy: Normal 0 is at 330° (between 300° and 0°)
+            [HexagonOrientation.PointyTop] = new (float x, float y)[]
+            {
+                (0.5f, HalfSqrt3), 
+                (-0.5f, HalfSqrt3), 
+                (-1, 0), 
+                (-0.5f, -HalfSqrt3), 
+                (0.5f, -HalfSqrt3),
+                (1, 0)
+            },
+            // Flat: Normal 0 is at 0° (between 330° and 30°)
+            [HexagonOrientation.FlatTop] = new (float x, float y)[]
+            {
+                (HalfSqrt3, 0.5f), 
+                (0, 1), 
+                (-HalfSqrt3, 0.5f), 
+                (-HalfSqrt3, -0.5f), 
+                (0, -1),
+                (HalfSqrt3, -0.5f)
+            }
+        };
+        
+        /// <summary>
+        /// GetEdgeSegment calculates the Cartesian coordinates of the endpoints of a specific edge of a hexagon.
+        /// </summary>
+        public static (float x1, float y1, float x2, float y2) GetEdgeSegment(float centerX, float centerY, float radius, int edgeIndex, HexagonOrientation orientation)
+        {
+            var p1 = GetCorner(radius, edgeIndex, orientation);
+            var p2 = GetCorner(radius, (edgeIndex + 1) % 6, orientation);            
+            return (centerX + p1.x, centerY + p1.y, centerX + p2.x, centerY + p2.y);
+        }
+
+        /// <summary>
+        /// IsPointInHex checks if a given point (px, py) is inside a hexagon defined by its center (centerX, centerY), radius, and orientation.
+        /// </summary>
+        public static bool IsPointInHex(float px, float py, float centerX, float centerY, float radius, HexagonOrientation orientation)
+        {
+            float dx = MathF.Abs(px - centerX);
+            float dy = MathF.Abs(py - centerY);
+
+            if (orientation == HexagonOrientation.PointyTop)
+            {
+                float h = radius * Sqrt3 / 2f; // apothem
+                if (dy > radius || dx > h) return false;
+                return (radius * h - radius * dx - h / 2f * dy) >= 0;
+            }
+            else
+            {
+                float h = radius * Sqrt3 / 2f;
+                if (dx > radius || dy > h) return false;
+                return (radius * h - radius * dy - h / 2f * dx) >= 0;
+            }
+        }
 
         /// <summary>
         /// ToHex converts Cartesian coordinates to axial coordinates of a hexagon based on its radius and orientation.
@@ -256,7 +285,7 @@ namespace Cozy.Hexagons
             if (corner < 0) corner = 0;
             if (corner > 5) corner = 5;
 
-            float angleDeg = Angles[orientation][corner];
+            float angleDeg = CornerAngles[orientation][corner];
             float angleRad = angleDeg * Deg2Rad;
             float x = radius * (float)Math.Cos(angleRad);
             float y = radius * (float)Math.Sin(angleRad);

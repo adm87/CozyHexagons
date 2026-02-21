@@ -460,14 +460,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Cozy.Hexagons::Cozy.Hexagons.Components.HexagonGridComponent
   configuration:
-    Orientation: 0
+    Orientation: 1
     CoordinateSystem: 1
     OffsetGrid:
       OffsetParity: 0
       Width: 5
       Height: 5
     AxialGrid:
-      Radius: 3
+      Radius: 1
     HexRadius: 0.5
 --- !u!4 &457558835
 Transform:
