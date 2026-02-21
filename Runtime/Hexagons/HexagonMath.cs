@@ -149,22 +149,23 @@ namespace Cozy.Hexagons
         /// <summary>
         /// FromHex converts axial coordinates of a hexagon to Cartesian coordinates based on its radius and orientation.
         /// </summary>
-        /// <param name="hexagon"></param>
+        /// <param name="q"></param>
+        /// <param name="r"></param>
         /// <param name="radius"></param>
         /// <param name="orientation"></param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
-        public static (float x, float y) FromHex(Hexagon hexagon, float radius, HexagonOrientation orientation)
+        public static (float x, float y) FromHex(float q, float r, float radius, HexagonOrientation orientation)
         {
             switch (orientation)
             {
                 case HexagonOrientation.PointyTop:
-                    float x = radius * Sqrt3 * (hexagon.Q + hexagon.R / 2f);
-                    float y = radius * 1.5f * hexagon.R;
+                    float x = radius * Sqrt3 * (q + r / 2f);
+                    float y = radius * 1.5f * r;
                     return (x, y);
                 case HexagonOrientation.FlatTop:
-                    float x2 = radius * 1.5f * hexagon.Q;
-                    float y2 = radius * Sqrt3 * (hexagon.R + hexagon.Q / 2f);
+                    float x2 = radius * 1.5f * q;
+                    float y2 = radius * Sqrt3 * (r + q / 2f);
                     return (x2, y2);
             }
             throw new InvalidOperationException("Invalid hexagon orientation");

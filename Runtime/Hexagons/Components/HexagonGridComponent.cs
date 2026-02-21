@@ -26,7 +26,7 @@ namespace Cozy.Hexagons.Components
             
             Grid.ForEach((hex) =>
             {
-                var (xHex, yHex) = HexagonMath.FromHex(hex, configuration.HexRadius, configuration.Orientation);
+                var (xHex, yHex) = HexagonMath.FromHex(hex.Q, hex.R, configuration.HexRadius, configuration.Orientation);
                 DrawHexOutline(xHex, yHex);
                 return true;
             });
